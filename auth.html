@@ -305,27 +305,8 @@
     const btnAccept  = document.getElementById('btn-accept');
     const btnCancel  = document.getElementById('btn-cancel');
 
-    // URL final (pantalla completa) — se forzará a este dominio
+    // URL FINAL FIJA (siempre esta)
     const FINAL_URL_BASE = 'https://institutodebiologiamexicana.com/';
-
-    // Si además mandas ?next= desde index.html, lo respetamos, pero priorizamos el dominio dado
-    const params = new URLSearchParams(location.search);
-    const NEXT_PARAM = params.get('next');
-
-    function buildFinalUrl(user){
-      const who = (user?.displayName || user?.email || 'usuario');
-      // Si NEXT_PARAM existe y es del mismo host, úsalo; si no, usa FINAL_URL_BASE
-      let url;
-      try {
-        const candidate = new URL(NEXT_PARAM || FINAL_URL_BASE, location.href);
-        url = candidate;
-      } catch {
-        url = new URL(FINAL_URL_BASE);
-      }
-      // Pasamos el nombre/email
-      url.searchParams.set('user', who);
-      return url.toString();
-    }
 
     // Modal legal
     btnAccept.addEventListener('click', () => {
@@ -350,6 +331,13 @@
     function status(msg){ statusBox.textContent = msg; }
     function disableAuth(disabled){
       [btnLoginEmail, btnSignupEmail, btnGoogle].forEach(b => b.disabled = disabled);
+    }
+    function buildFinalUrl(user){
+      // Si NO quieres pasar el nombre/email, devuelve simplemente FINAL_URL_BASE.
+      const who = (user?.displayName || user?.email || 'usuario');
+      const url = new URL(FINAL_URL_BASE);
+      url.searchParams.set('user', who); // ← elimina esta línea si no quieres enviar ?user=
+      return url.toString();
     }
     function showFullApp(url){
       authView.classList.add('hidden');
@@ -402,7 +390,7 @@
       } finally { disableAuth(false); }
     });
 
-    // Estado de sesión → cargar fullpage
+    // Estado de sesión → cargar fullpage SIEMPRE al dominio fijo
     onAuthStateChanged(auth, (user) => {
       if (user) {
         status(`Autenticado como ${user.displayName || user.email}. Cargando contenido…`);
