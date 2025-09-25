@@ -166,7 +166,7 @@
       border: 0;
       background: #fff;
     }
-    /* Loader simple (opcional) */
+    /* Loader simple */
     .loader {
       position: absolute; inset: 0; display:flex; align-items:center; justify-content:center;
       color: #fff; font-weight: 700; letter-spacing: .3px;
@@ -209,6 +209,10 @@
           <div class="field">
             <div class="label">Nombre</div>
             <input id="signup-name" type="text" placeholder="Tu nombre" autocomplete="name" />
+          </div>
+          <div class="field">
+            <div class="label">Apodo</div>
+            <input id="signup-nick" type="text" placeholder="Tu apodo" />
           </div>
           <div class="field">
             <div class="label">Correo</div>
@@ -256,9 +260,9 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-analytics.js";
     import {
-      getAuth, onAuthStateChanged, updateProfile,
+      getAuth, onAuthStateChanged, updateProfile, signOut,
       signInWithEmailAndPassword, createUserWithEmailAndPassword,
-      GoogleAuthProvider, signInWithPopup
+      GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult
     } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
 
     // Config
@@ -278,6 +282,7 @@
 
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
 
     // Elements
     const authView   = document.getElementById('authView');
@@ -293,6 +298,7 @@
     const loginEmail = document.getElementById('login-email');
     const loginPass  = document.getElementById('login-password');
     const signupName = document.getElementById('signup-name');
+    const signupNick = document.getElementById('signup-nick');
     const signupEmail= document.getElementById('signup-email');
     const signupPass = document.getElementById('signup-password');
 
@@ -305,8 +311,13 @@
     const btnAccept  = document.getElementById('btn-accept');
     const btnCancel  = document.getElementById('btn-cancel');
 
-    // URL FINAL FIJA (siempre esta)
+    // URL FINAL FIJA
     const FINAL_URL_BASE = 'https://institutodebiologiamexicana.com/';
+
+    // ===== SIEMPRE PEDIR INICIAR SESIÓN =====
+    // Al cargar la página, cerramos cualquier sesión previa.
+    // Así, aunque el usuario ya estuviera autenticado, verá el login.
+    try { await signOut(auth); } catch(_) {}
 
     // Modal legal
     btnAccept.addEventListener('click', () => {
@@ -333,10 +344,11 @@
       [btnLoginEmail, btnSignupEmail, btnGoogle].forEach(b => b.disabled = disabled);
     }
     function buildFinalUrl(user){
-      // Si NO quieres pasar el nombre/email, devuelve simplemente FINAL_URL_BASE.
-      const who = (user?.displayName || user?.email || 'usuario');
+      const who  = (user?.displayName || user?.email || 'usuario');
+      const nick = localStorage.getItem('carletes_nick') || '';
       const url = new URL(FINAL_URL_BASE);
-      url.searchParams.set('user', who); // ← elimina esta línea si no quieres enviar ?user=
+      url.searchParams.set('user', who);
+      if (nick) url.searchParams.set('nick', nick);
       return url.toString();
     }
     function showFullApp(url){
@@ -361,39 +373,74 @@
       } finally { disableAuth(false); }
     });
 
-    // Signup con nombre
+    // Signup con nombre y apodo
     btnSignupEmail.addEventListener('click', async () => {
       const name  = signupName.value.trim();
+      const nick  = signupNick.value.trim();
       const email = signupEmail.value.trim();
       const pass  = signupPass.value.trim();
       if(!name)  return status('Por favor, escribe tu nombre.');
+      if(!nick)  return status('Por favor, escribe tu apodo.');
       if(!email) return status('El correo es requerido.');
       if(pass.length < 6) return status('Contraseña mínima de 6 caracteres.');
       try {
         disableAuth(true);
         const cred = await createUserWithEmailAndPassword(auth, email, pass);
         await updateProfile(cred.user, { displayName: name });
+        localStorage.setItem('carletes_nick', nick);
         status('Cuenta creada e iniciada correctamente.');
       } catch (e) {
         status(mapAuthError(e));
       } finally { disableAuth(false); }
     });
 
-    // Google
+    // Google con fallback a redirect
     btnGoogle.addEventListener('click', async () => {
       try {
         disableAuth(true);
         await signInWithPopup(auth, provider);
         status('Autenticado con Google.');
       } catch (e) {
-        status(mapAuthError(e));
-      } finally { disableAuth(false); }
+        const fallbackCodes = [
+          'auth/popup-blocked',
+          'auth/popup-closed-by-user',
+          'auth/operation-not-supported-in-this-environment',
+          'auth/auth-domain-config-required',
+          'auth/unauthorized-domain'
+        ];
+        if (fallbackCodes.includes(e?.code)) {
+          try {
+            status('Abriendo Google con redirección…');
+            await signInWithRedirect(auth, provider);
+            return;
+          } catch (e2) {
+            status(mapAuthError(e2));
+          }
+        } else {
+          status(mapAuthError(e));
+        }
+      } finally {
+        disableAuth(false);
+      }
     });
 
-    // Estado de sesión → cargar fullpage SIEMPRE al dominio fijo
+    // Procesar resultado de signInWithRedirect (si ocurrió)
+    (async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result && result.user) {
+          status(`Autenticado como ${result.user.displayName || result.user.email}. Cargando contenido…`);
+          const finalUrl = buildFinalUrl(result.user);
+          showFullApp(finalUrl);
+        }
+      } catch (e) {
+        status(mapAuthError(e));
+      }
+    })();
+
+    // Estado de sesión → cargar fullpage al dominio fijo (tras login explícito)
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        status(`Autenticado como ${user.displayName || user.email}. Cargando contenido…`);
         const finalUrl = buildFinalUrl(user);
         showFullApp(finalUrl);
       }
@@ -412,6 +459,9 @@
         case 'auth/weak-password': return 'Contraseña débil (mín. 6).';
         case 'auth/popup-blocked': return 'El navegador bloqueó la ventana emergente.';
         case 'auth/popup-closed-by-user': return 'Cerraste la ventana de Google.';
+        case 'auth/operation-not-supported-in-this-environment': return 'El entorno no soporta ventanas emergentes. Usaremos redirección.';
+        case 'auth/unauthorized-domain': return 'Dominio no autorizado en Firebase (revísalo en Authentication → Settings).';
+        case 'auth/auth-domain-config-required': return 'Falta configurar el dominio de autenticación en Firebase.';
         default: return 'Error de autenticación. Intenta nuevamente.';
       }
     }
