@@ -10,7 +10,7 @@
   <!-- Fuente -->
   <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-  <!-- Estilos del usuario -->
+  <!-- Estilos -->
   <style>
     :root {
       --bg: #ffffff;
@@ -18,7 +18,7 @@
       --muted: #444;
       --card: #f9fafb;
       --stroke: #e5e7eb;
-      --accent: #1d4ed8; /* azul principal */
+      --accent: #1d4ed8;
       --accent-dark: #1e3a8a;
       --radius: 16px;
       --shadow: 0 6px 18px rgba(0,0,0,.08);
@@ -43,47 +43,6 @@
       font-family: 'Lexend Deca', sans-serif;
       -webkit-font-smoothing: antialiased;
     }
-    a { color: inherit; text-decoration: none; }
-
-    .wrap {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: max(20px, env(safe-area-inset-top)) 20px max(24px, env(safe-area-inset-bottom));
-    }
-
-    /* Hero */
-    .hero {
-      text-align: center;
-      padding: 32px 20px;
-      background: var(--card);
-      border: 1px solid var(--stroke);
-      border-radius: 20px;
-      box-shadow: var(--shadow);
-      margin-bottom: 30px;
-    }
-    .badge {
-      display: inline-block;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--accent);
-      padding: 6px 12px;
-      border: 1px solid var(--accent);
-      border-radius: 999px;
-      margin-bottom: 16px;
-    }
-    .title {
-      font-size: clamp(28px, 6vw, 36px);
-      font-weight: 800;
-      margin: 0 0 8px;
-      color: var(--fg);
-    }
-    .subtitle {
-      font-size: 16px;
-      color: var(--muted);
-      max-width: 640px;
-      margin: 0 auto 16px;
-      line-height: 1.5;
-    }
 
     .btn {
       padding: 12px 20px;
@@ -101,13 +60,10 @@
       background: transparent;
       color: var(--accent);
     }
-    .btn.ghost:hover {
-      background: var(--accent);
-      color: #fff;
-    }
+    .btn.ghost:hover { background: var(--accent); color:#fff; }
     .btn.full { width: 100%; }
 
-    /* Tarjeta de login centrada */
+    /* Login centrado */
     .center-screen {
       min-height: 100dvh;
       display: grid;
@@ -124,46 +80,51 @@
       padding: 20px;
       text-align: left;
     }
-
-    .tabs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      padding: 8px;
-      background: #fff0;
-      border-radius: 12px;
-      margin-top: 8px;
+    .hero {
+      text-align: center;
+      padding: 16px;
+      background: var(--card);
       border: 1px solid var(--stroke);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent);
+      padding: 6px 12px;
+      border: 1px solid var(--accent);
+      border-radius: 999px;
+      margin-bottom: 12px;
+    }
+    .title {
+      font-size: clamp(24px, 5vw, 32px);
+      font-weight: 800;
+      margin: 0 0 6px;
+    }
+    .subtitle {
+      font-size: 16px; color: var(--muted);
+      margin: 0; line-height: 1.5;
+    }
+    .tabs {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 8px; padding: 8px; border: 1px solid var(--stroke);
+      border-radius: 12px; margin-top: 8px;
     }
     .tab {
-      text-align: center;
-      padding: 10px 12px;
-      border-radius: 10px;
-      font-weight: 700;
-      color: var(--muted);
-      border: 1px solid transparent;
-      cursor: pointer;
-      user-select: none;
+      text-align: center; padding: 10px 12px; border-radius: 10px;
+      font-weight: 700; color: var(--muted); border: 1px solid transparent; cursor: pointer;
     }
-    .tab.active {
-      color: var(--fg);
-      border-color: var(--stroke);
-      background: rgba(0,0,0,.03);
-    }
-
+    .tab.active { color: var(--fg); border-color: var(--stroke); background: rgba(0,0,0,.03); }
     .field { margin: 10px 0; }
-    .label { font-size: 13px; font-weight: 700; margin-bottom: 6px; color: var(--fg); }
-    input[type="email"], input[type="password"], input[type="text"] {
-      width: 100%;
-      padding: 12px 14px;
-      border-radius: 12px;
-      border: 1px solid var(--stroke);
-      background: #fff0;
-      color: var(--fg);
-      outline: none;
+    .label { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+    input[type="email"], input[type="password"], input[type="text"]{
+      width:100%; padding:12px 14px; border-radius:12px; border:1px solid var(--stroke);
+      background:#fff0; color:var(--fg); outline:none;
     }
     input::placeholder { color: var(--muted); }
-
     .notice {
       border: 1px dashed var(--stroke);
       color: var(--muted);
@@ -171,8 +132,6 @@
       border-radius: 12px;
       font-size: 14px;
     }
-
-    .muted { color: var(--muted); font-size: 14px; }
 
     /* Modal legal */
     .modal-backdrop{
@@ -193,38 +152,47 @@
     .modal p{ color: var(--muted); margin: 0; }
     .modal .actions{ display:flex; gap:10px; margin-top:16px; }
 
-    /* Vista app (iframe) */
-    .app-wrap { max-width: 1100px; margin: 0 auto; padding: 20px; }
-    .app-frame{
+    /* Vista app fullscreen */
+    .app-immersive {
+      position: fixed;
+      inset: 0;
+      background: #000; /* mientras carga */
+    }
+    .app-immersive iframe {
+      position: absolute;
+      inset: 0;
       width: 100%;
-      height: 80dvh;
-      border: 1px solid var(--stroke);
-      border-radius: 14px;
-      box-shadow: var(--shadow);
+      height: 100%;
+      border: 0;
       background: #fff;
     }
+    /* Loader simple (opcional) */
+    .loader {
+      position: absolute; inset: 0; display:flex; align-items:center; justify-content:center;
+      color: #fff; font-weight: 700; letter-spacing: .3px;
+    }
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
-  <!-- Contenedor centrado -->
+  <!-- Login centrado -->
   <div id="authView" class="center-screen">
     <div class="auth-card">
-      <div class="hero" style="padding: 16px;">
+      <div class="hero">
         <div class="badge">Acceso a Carletes Games</div>
         <h1 class="title">Inicia sesión para continuar</h1>
         <p class="subtitle">Puedes crear cuenta con tu nombre o usar Google.</p>
       </div>
 
-      <!-- Área de autenticación -->
-      <div id="authArea" class="">
+      <div id="authArea">
         <div class="tabs" role="tablist" aria-label="Modo de acceso">
           <div id="tab-login"  class="tab active" role="tab" tabindex="0">Iniciar sesión</div>
           <div id="tab-signup" class="tab"        role="tab" tabindex="0">Crear cuenta</div>
         </div>
 
         <!-- Login -->
-        <div id="panel-login" style="margin-top: 12px;">
+        <div id="panel-login" style="margin-top:12px;">
           <div class="field">
             <div class="label">Correo</div>
             <input id="login-email" type="email" placeholder="tu@correo.com" autocomplete="email" />
@@ -237,7 +205,7 @@
         </div>
 
         <!-- Signup -->
-        <div id="panel-signup" style="margin-top: 12px; display: none;">
+        <div id="panel-signup" style="margin-top:12px; display:none;">
           <div class="field">
             <div class="label">Nombre</div>
             <input id="signup-name" type="text" placeholder="Tu nombre" autocomplete="name" />
@@ -258,19 +226,14 @@
 
         <div style="height:12px"></div>
         <div id="status" class="notice">Esperando autenticación…</div>
-        <div style="height:6px"></div>
-        <div class="muted">Al continuar aceptas el aviso mostrado.</div>
       </div>
     </div>
   </div>
 
-  <!-- Vista App (iframe con link final) -->
-  <div id="appView" class="app-wrap" style="display:none;">
-    <div class="hero" style="padding: 16px; margin-bottom: 16px;">
-      <h2 class="title" style="font-size: 22px; margin: 0;">Contenido cargado</h2>
-      <p class="subtitle" style="margin: 6px auto 0;">Estás autenticado. Tu contenido se muestra abajo.</p>
-    </div>
-    <iframe id="appIframe" class="app-frame" allow="clipboard-read; clipboard-write; fullscreen *;"></iframe>
+  <!-- Vista App a pantalla completa -->
+  <div id="appView" class="app-immersive hidden">
+    <div id="loader" class="loader">Cargando contenido…</div>
+    <iframe id="appIframe" allow="clipboard-read; clipboard-write; fullscreen *;"></iframe>
   </div>
 
   <!-- Modal legal -->
@@ -320,6 +283,7 @@
     const authView   = document.getElementById('authView');
     const appView    = document.getElementById('appView');
     const appIframe  = document.getElementById('appIframe');
+    const loaderEl   = document.getElementById('loader');
 
     const tabLogin   = document.getElementById('tab-login');
     const tabSignup  = document.getElementById('tab-signup');
@@ -341,9 +305,27 @@
     const btnAccept  = document.getElementById('btn-accept');
     const btnCancel  = document.getElementById('btn-cancel');
 
-    // Next URL (desde index.html como ?next=...)
+    // URL final (pantalla completa) — se forzará a este dominio
+    const FINAL_URL_BASE = 'https://institutodebiologiamexicana.com/';
+
+    // Si además mandas ?next= desde index.html, lo respetamos, pero priorizamos el dominio dado
     const params = new URLSearchParams(location.search);
-    const NEXT_URL = params.get('next') || 'https://institutodebiologiamexicana.com/';
+    const NEXT_PARAM = params.get('next');
+
+    function buildFinalUrl(user){
+      const who = (user?.displayName || user?.email || 'usuario');
+      // Si NEXT_PARAM existe y es del mismo host, úsalo; si no, usa FINAL_URL_BASE
+      let url;
+      try {
+        const candidate = new URL(NEXT_PARAM || FINAL_URL_BASE, location.href);
+        url = candidate;
+      } catch {
+        url = new URL(FINAL_URL_BASE);
+      }
+      // Pasamos el nombre/email
+      url.searchParams.set('user', who);
+      return url.toString();
+    }
 
     // Modal legal
     btnAccept.addEventListener('click', () => {
@@ -369,15 +351,12 @@
     function disableAuth(disabled){
       [btnLoginEmail, btnSignupEmail, btnGoogle].forEach(b => b.disabled = disabled);
     }
-    // Muestra el iframe del contenido final y PASA ?user=(displayName o email)
-    function showApp(user){
-      authView.style.display = 'none';
-      appView.style.display  = 'block';
-      const who = (user?.displayName || user?.email || 'usuario');
-      // Construimos la URL final agregando/actualizando el parámetro user
-      const url = new URL(NEXT_URL, location.href);
-      url.searchParams.set('user', who);
-      appIframe.src = url.toString();
+    function showFullApp(url){
+      authView.classList.add('hidden');
+      appView.classList.remove('hidden');
+      loaderEl.classList.remove('hidden');
+      appIframe.addEventListener('load', () => loaderEl.classList.add('hidden'), { once: true });
+      appIframe.src = url;
     }
 
     // Email/Password
@@ -423,11 +402,12 @@
       } finally { disableAuth(false); }
     });
 
-    // Estado de sesión
+    // Estado de sesión → cargar fullpage
     onAuthStateChanged(auth, (user) => {
       if (user) {
         status(`Autenticado como ${user.displayName || user.email}. Cargando contenido…`);
-        showApp(user);
+        const finalUrl = buildFinalUrl(user);
+        showFullApp(finalUrl);
       }
     });
 
@@ -453,4 +433,3 @@
   </script>
 </body>
 </html>
-
